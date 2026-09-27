@@ -1,0 +1,223 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    /* ensure page background leaves space for footer and card stays above footer */
+    .page-bg {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem 8rem; /* extra bottom padding so footer doesn't overlap */
+        background: radial-gradient(1200px 400px at 10% 10%, rgba(13,110,253,0.12), transparent 10%),
+                    radial-gradient(1000px 350px at 95% 90%, rgba(102,16,242,0.10), transparent 10%),
+                    linear-gradient(135deg, #f6f8ff 0%, #eef6ff 50%, #ffffff 100%);
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 560px;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(22, 28, 45, 0.12);
+        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.95));
+        position: relative;     /* ensure it sits above other page elements */
+        z-index: 2000;          /* bring above footer so buttons remain clickable */
+        margin-bottom: 1rem;
+    }
+
+    /* header / text colors */
+    .register-header {
+        background: linear-gradient(90deg, rgba(13,110,253,1) 0%, rgba(102,16,242,1) 100%);
+        color: #fff;
+        padding: 1.25rem 1.5rem;
+    }
+    .register-header .form-note { color: rgba(255,255,255,0.95); font-size:.9rem; margin-top:.25rem; display:block; }
+    .register-header .meta-note { color: rgba(255,255,255,0.95); }
+
+    .btn-signin { border-radius: 8px; font-weight: 600; color: #fff; border: 1px solid rgba(255,255,255,0.18); background: transparent; }
+    .btn-signin:hover { background: rgba(255,255,255,0.06); }
+
+    /* small helpers */
+    .social-btn { border-radius: 8px; padding: .45rem .75rem; font-weight: 600; }
+    .input-icon { width: 44px; text-align: center; color: #6c757d; }
+    .pw-strength { height: 6px; border-radius: 6px; overflow: hidden; background: #e9ecef; }
+    .pw-strength > div { height: 100%; width: 0; background: linear-gradient(90deg,#dc3545,#ffc107,#198754); transition: width .25s ease; }
+    .form-note { font-size: .875rem; color: #6c757d; }
+
+    /* keep media rule safe in Razor */
+    @@media (max-width: 575.98px) {
+        .register-header { text-align: left; }
+        .register-header .meta-note { display: none; }
+    }
+</style>
+
+<div class="page-bg">
+    <div class="card register-card" role="dialog" aria-labelledby="registerTitle">
+        <div class="register-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 id="registerTitle" class="m-0">Welcome — Create an account</h4>
+                <span class="form-note">Fast sign up and secure checkout</span>
+            </div>
+            <div class="text-end d-none d-md-block">
+                <small class="meta-note">Already have an account?</small>
+@*                 <div><a asp-action="Login" class="btn btn-sm btn-signin ms-1">Sign in</a></div>
+ *@                <div><a asp-action="Login" class="btn btn-sm btn-light text-primary ms-1">Sign in</a></div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="mb-3 d-flex gap-2">
+                <button class="btn btn-outline-primary social-btn w-100" type="button" onclick="alert('External provider not configured')">
+                    <i class="bi bi-google me-2"></i> Sign up with Google
+                </button>
+                <button class="btn btn-outline-dark social-btn" type="button" onclick="alert('External provider not configured')">
+                    <i class="bi bi-github"></i>
+                </button>
+            </div>
+
+            <div class="text-center text-muted small mb-3">or use your email address</div>
+
+            <form asp-action="Register" method="post" novalidate id="registerForm">
+                <div class="mb-3 input-group has-validation">
+                    <span class="input-group-text input-icon"><i class="bi bi-envelope"></i></span>
+                    <input asp-for="Email" class="form-control" placeholder="Email address" aria-label="Email" />
+                    <div class="invalid-feedback">
+                        <span asp-validation-for="Email"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 input-group">
+                    <span class="input-group-text input-icon"><i class="bi bi-lock"></i></span>
+                    <input asp-for="Password" class="form-control" placeholder="Create password" id="Password" aria-label="Password" />
+                    <span class="input-group-text pw-toggle" id="togglePw" title="Show / hide password"><i class="bi bi-eye"></i></span>
+                </div>
+                <div class="mb-2">
+                    <div class="pw-strength mb-1" aria-hidden="true">
+                        <div id="pwBar"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <small id="pwText" class="form-note">Use at least 8 characters with numbers and letters</small>
+                        <small id="pwScore" class="form-note"></small>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 input-group has-validation">
+                    <span class="input-group-text input-icon"><i class="bi bi-lock-fill"></i></span>
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm password" id="ConfirmPassword" aria-label="Confirm password" />
+                    <div class="invalid-feedback">
+                        <span asp-validation-for="ConfirmPassword"></span>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="acceptTerms" />
+                    <label class="form-check-label" for="acceptTerms">I agree to the <a asp-action="Terms">terms &amp; privacy</a></label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="submitBtn" disabled>Register</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="form-note">By registering you agree to our <a asp-action="Privacy">Privacy Policy</a>.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const pw = document.getElementById('Password');
+            const confirmPw = document.getElementById('ConfirmPassword');
+            const toggle = document.getElementById('togglePw');
+            const pwBar = document.getElementById('pwBar');
+            const pwText = document.getElementById('pwText');
+            const pwScore = document.getElementById('pwScore');
+            const accept = document.getElementById('acceptTerms');
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('registerForm');
+
+            toggle?.addEventListener('click', function () {
+                if (!pw) return;
+                const shown = pw.type === 'text';
+                pw.type = shown ? 'password' : 'text';
+                toggle.innerHTML = shown ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            });
+
+            function scorePassword(s) {
+                let score = 0;
+                if (!s) return 0;
+                if (s.length >= 8) score += 1;
+                if (/[A-Z]/.test(s)) score += 1;
+                if (/[0-9]/.test(s)) score += 1;
+                if (/[^A-Za-z0-9]/.test(s)) score += 1;
+                if (s.length >= 12) score += 1;
+                return score;
+            }
+
+            function updateStrength() {
+                if (!pw) return;
+                const s = pw.value || '';
+                const sc = scorePassword(s);
+                const pct = (sc / 5) * 100;
+                pwBar.style.width = pct + '%';
+                if (sc <= 1) {
+                    pwBar.style.background = '#dc3545';
+                    pwText.textContent = 'Very weak';
+                } else if (sc === 2) {
+                    pwBar.style.background = '#fd7e14';
+                    pwText.textContent = 'Weak';
+                } else if (sc === 3) {
+                    pwBar.style.background = '#ffc107';
+                    pwText.textContent = 'Okay';
+                } else if (sc === 4) {
+                    pwBar.style.background = '#198754';
+                    pwText.textContent = 'Good';
+                } else {
+                    pwBar.style.background = 'linear-gradient(90deg,#198754,#0d6efd)';
+                    pwText.textContent = 'Strong';
+                }
+                pwScore.textContent = s ? `${sc}/5` : '';
+                validateConfirm();
+                updateSubmitState();
+            }
+
+            function validateConfirm() {
+                if (!confirmPw) return;
+                if (confirmPw.value && pw.value !== confirmPw.value) {
+                    confirmPw.classList.add('is-invalid');
+                } else {
+                    confirmPw.classList.remove('is-invalid');
+                }
+            }
+
+            function updateSubmitState() {
+                const can = accept.checked &&
+                    pw.value && confirmPw.value &&
+                    pw.value === confirmPw.value;
+                submitBtn.disabled = !can;
+            }
+
+            pw?.addEventListener('input', updateStrength);
+            confirmPw?.addEventListener('input', validateConfirm);
+            accept?.addEventListener('change', updateSubmitState);
+
+            form?.addEventListener('submit', function (e) {
+                if (!accept.checked) {
+                    e.preventDefault();
+                    alert('Please accept the terms to proceed.');
+                    return false;
+                }
+            });
+
+            updateStrength();
+            updateSubmitState();
+        })();
+    </script>
+}

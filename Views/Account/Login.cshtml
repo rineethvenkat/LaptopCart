@@ -1,0 +1,138 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    .page-bg {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem 12rem; /* extra bottom space so footer won't overlap */
+        background: radial-gradient(1000px 300px at 10% 10%, rgba(13,110,253,0.08), transparent 10%),
+                    radial-gradient(900px 300px at 95% 90%, rgba(102,16,242,0.06), transparent 10%),
+                    linear-gradient(180deg, #fbfdff 0%, #f1f8ff 100%);
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 560px;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(22, 28, 45, 0.10);
+        background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(250,250,255,0.96));
+        position: relative;
+        z-index: 3000; /* ensure card sits above footer and other elements */
+        margin-bottom: 1rem;
+    }
+
+    .auth-header {
+        background: linear-gradient(90deg, rgba(13,110,253,1) 0%, rgba(102,16,242,1) 100%);
+        color: #fff;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .auth-header .subtitle {
+        color: rgba(255,255,255,0.95);
+        font-size: .9rem;
+        margin-top: .25rem;
+        display: block;
+    }
+
+    .btn-signup {
+        border-radius: 8px;
+        font-weight: 600;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.18);
+        background: transparent;
+    }
+
+    .social-btn { border-radius: 8px; padding: .45rem .75rem; font-weight: 600; }
+    .input-icon { width: 44px; text-align: center; color: #6c757d; }
+    .pw-toggle { cursor: pointer; user-select: none; }
+    .form-note { font-size: .875rem; color: #6c757d; }
+
+    @@media (max-width: 575.98px) {
+        .auth-header { text-align: left; }
+        .auth-header .meta { display: none; }
+    }
+</style>
+
+<div class="page-bg">
+    <div class="card auth-card" role="dialog" aria-labelledby="loginTitle">
+        <div class="auth-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 id="loginTitle" class="m-0">Welcome back</h4>
+                <span class="subtitle">Secure sign in to continue</span>
+            </div>
+            <div class="text-end d-none d-md-block meta">
+                <small class="text-white-50">New here?</small>
+                <div><a asp-action="Register" class="btn btn-sm btn-light text-primary ms-1">Create account</a></div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="mb-3 d-flex gap-2">
+                <button class="btn btn-outline-primary social-btn w-100" type="button" onclick="alert('External provider not configured')">
+                    <i class="bi bi-google me-2"></i> Continue with Google
+                </button>
+                <button class="btn btn-outline-dark social-btn" type="button" onclick="alert('External provider not configured')">
+                    <i class="bi bi-github"></i>
+                </button>
+            </div>
+
+            <div class="text-center text-muted small mb-3">or sign in with your email</div>
+
+            <form asp-action="Login" method="post" novalidate id="loginForm">
+                @Html.AntiForgeryToken()
+                <input asp-for="ReturnUrl" type="hidden" />
+
+                <div class="mb-3 input-group">
+                    <span class="input-group-text input-icon"><i class="bi bi-envelope"></i></span>
+                    <input asp-for="Email" class="form-control" placeholder="Email address" aria-label="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 input-group align-items-center">
+                    <span class="input-group-text input-icon"><i class="bi bi-lock"></i></span>
+                    <input asp-for="Password" class="form-control" placeholder="Password" id="Password" aria-label="Password" />
+                    <span class="input-group-text pw-toggle" id="togglePw" title="Show / hide password"><i class="bi bi-eye"></i></span>
+                    <span asp-validation-for="Password" class="text-danger ms-2 d-block"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input asp-for="RememberMe" class="form-check-input" id="RememberMe" />
+                        <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                    </div>
+                    <div><a asp-action="ForgotPassword">Forgot password?</a></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="loginSubmit">Login</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="form-note">By signing in you agree to our <a asp-action="Privacy">Privacy Policy</a>.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const pw = document.getElementById('Password');
+            const toggle = document.getElementById('togglePw');
+
+            toggle?.addEventListener('click', function () {
+                if (!pw) return;
+                const shown = pw.type === 'text';
+                pw.type = shown ? 'password' : 'text';
+                toggle.innerHTML = shown ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            });
+        })();
+    </script>
+}
