@@ -1,5 +1,5 @@
-﻿using LaptopCart.Data;
-using LaptopCart.Models;
+﻿using LaptopCartDAL.Data;
+using LaptopCartModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

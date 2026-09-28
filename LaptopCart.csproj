@@ -17,4 +17,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LaptopCartDAL\LaptopCartDAL.csproj" />
+    <ProjectReference Include="..\LaptopCartModels\LaptopCartModels.csproj" />
+    <ProjectReference Include="..\LaptopCartUtility\LaptopCartUtility.csproj" />
+  </ItemGroup>
+
 </Project>

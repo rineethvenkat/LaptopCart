@@ -1,5 +1,6 @@
-﻿using LaptopCart.Data;
-using LaptopCart.Models;
+﻿using LaptopCartDAL.Data;
+using LaptopCartModels;
+using LaptopCartUtility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;

@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="../LaptopCartDAL/LaptopCartDAL.csproj" Id="b86038e2-3e14-462f-bb13-7339cedf313f" />
+  <Project Path="../LaptopCartModels/LaptopCartModels.csproj" Id="32cd0e43-ef7e-45eb-a738-efcd74c1b14e" />
+  <Project Path="../LaptopCartUtility/LaptopCartUtility.csproj" Id="4aab3ae2-9e03-4c6f-85ac-0e61387aa2b1" />
   <Project Path="LaptopCart.csproj" />
 </Solution>
