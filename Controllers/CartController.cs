@@ -31,6 +31,7 @@ namespace LaptopCart.Controllers
                 cartFromDb.Quantity += 1;
                 _context.CartItems.Update(cartFromDb);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Cart item quantity increased successfully.";
             }
             else
             {
@@ -57,6 +58,7 @@ namespace LaptopCart.Controllers
                     HttpContext.Session.SetInt32(SDClass.SessionCart, count - 1);
                 }
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Cart item quantity decreased successfully.";
             }
             else
             {
@@ -74,6 +76,7 @@ namespace LaptopCart.Controllers
                 _context.CartItems.Remove(cartFromDb);
                 HttpContext.Session.SetInt32(SDClass.SessionCart, _context.CartItems.Count(c => c.UserId == cartFromDb.UserId)-1);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Cart item removed successfully.";
             }
             else
             {

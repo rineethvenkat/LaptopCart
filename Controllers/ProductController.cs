@@ -63,6 +63,7 @@ namespace LaptopCart.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Product added to cart successfully.";
             return RedirectToAction("ProductView");
         }
     }

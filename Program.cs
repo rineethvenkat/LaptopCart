@@ -75,8 +75,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthorization();
+// session must be enabled before authentication/authorization if you rely on session during auth
 app.UseSession();
+
+// enable authentication before authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

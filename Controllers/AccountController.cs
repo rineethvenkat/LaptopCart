@@ -9,11 +9,13 @@ namespace LaptopCart.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -23,6 +25,7 @@ namespace LaptopCart.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             /*
@@ -40,7 +43,7 @@ namespace LaptopCart.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "User");
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("ProductView", "Product");
             }
             else
             {
@@ -56,6 +59,7 @@ namespace LaptopCart.Controllers
         public IActionResult Login(string returnUrl = null) => View(new LoginViewModel { ReturnUrl = returnUrl });
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             /*
@@ -65,24 +69,39 @@ namespace LaptopCart.Controllers
              * If login is successful, the user is redirected to the specified return URL or the home page.
              * If there are any errors during login, an error message is added to the ModelState and the view is returned with error messages.
              */
-            if (!ModelState.IsValid) return View(model);
+            //if (!ModelState.IsValid) return View(model);
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                _logger.LogInformation("User logged in.");
                 if (string.IsNullOrEmpty(model.ReturnUrl))
                     return RedirectToAction("ProductView", "Product");
                 else
                     return Redirect(model.ReturnUrl);
             }
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning("User account locked out.");
+                ModelState.AddModelError(string.Empty, "Account locked out.");
+                return View(model);
+            }
+            if (result.IsNotAllowed)
+            {
+                _logger.LogWarning("User not allowed to sign in.");
+                ModelState.AddModelError(string.Empty, "You are not allowed to sign in.");
+                return View(model);
+            }
             else
             {
+                _logger.LogWarning("Invalid login attempt.");
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             /*
@@ -90,7 +109,7 @@ namespace LaptopCart.Controllers
              * It signs out the currently logged-in user using the SignInManager and redirects them to the home page.
              */
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("ProductView", "Product");
         }
     }
 }

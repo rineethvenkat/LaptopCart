@@ -82,6 +82,7 @@
             <div class="text-center text-muted small mb-3">or use your email address</div>
 
             <form asp-action="Register" method="post" novalidate id="registerForm">
+                @Html.AntiForgeryToken()
                 <div class="mb-3 input-group has-validation">
                     <span class="input-group-text input-icon"><i class="bi bi-envelope"></i></span>
                     <input asp-for="Email" class="form-control" placeholder="Email address" aria-label="Email" />

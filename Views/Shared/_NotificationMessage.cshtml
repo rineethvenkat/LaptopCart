@@ -1,0 +1,28 @@
+﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            // JSON-encode server message to avoid JS syntax errors
+            const msg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["SuccessMessage"]));
+            toastr.options = {
+                "positionClass": "toast-top-right",
+                "timeOut": "3500"
+            };
+            toastr.success(msg);
+        </script>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            // JSON-encode server message to avoid JS syntax errors
+            const msg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["ErrorMessage"]));
+            toastr.options = {
+                "positionClass": "toast-top-right",
+                "timeOut": "3500"
+            };
+            toastr.error(msg);
+        </script>
+    }

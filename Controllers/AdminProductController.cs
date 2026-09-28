@@ -83,6 +83,7 @@ namespace LaptopCart.Controllers
                 _context.Products.Add(product);
                 // Save the changes to the database asynchronously
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Product created successfully.";
                 return RedirectToAction("Index");
             }
             else
@@ -147,6 +148,7 @@ namespace LaptopCart.Controllers
             {
                 _context.Products.Update(product);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Product updated successfully.";
                 return RedirectToAction("Index");
             }
             return View(product);
@@ -193,6 +195,7 @@ namespace LaptopCart.Controllers
                 }
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Product deleted successfully.";
                 return RedirectToAction("Index");
             }
             else
